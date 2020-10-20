@@ -1,0 +1,11 @@
+### Configure latest Ubuntu (18.0) image with SSH enabled 
+
+-- Build docker image
+   $> docker build -f Dockerfile.cnf -t ubuntu18airflow .
+
+-- Run container
+   $> docker run -d -p 8080:8080 -v D:/mydocker/activision/local-data:/usr/local/local-data ubuntu18airflow
+
+-- Keep container id to commit latest changes
+   $> docker ps 
+   $> docker commit <container_id> <image_name> **<- use -t <tag> as image_name as in above

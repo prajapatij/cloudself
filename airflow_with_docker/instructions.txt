@@ -1,0 +1,14 @@
+### Overall flow
+
+-- System Overview
+   ** Following is the setup stack
+		[Applications]	[ Airflow Websever/scheduler | PostgreSQL ]
+		[Runtime]	[ System Python Setup ]
+		[OS/Container]	[ Docker Image for Ubuntu ]
+
+-- Setup steps
+   1) Setup docker using instructions inside docker directory
+   2) Setup Python environment using instructions inside pyenv_setup directory
+   3) Setup Airflow using instructions inside t_airflow_setup directory
+   4) Apply application/system level bug fixes by using instructions inside z_system_fixes directory
+

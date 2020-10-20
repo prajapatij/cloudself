@@ -1,0 +1,18 @@
+FROM ubuntu:18.04
+
+RUN apt-get update && \
+ apt-get install -y -f vim && \
+ apt-get install -y -f iputils-ping && \
+ apt-get install -y -f net-tools && \
+ apt-get install -y -f iproute2 && \
+ apt-get install -y -f python openssh-server && \
+ apt-get install -y -f software-properties-common
+ 
+RUN echo 'root:pass' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN mkdir /var/run/sshd
+
+EXPOSE 1024-65535
+
+CMD ["/usr/sbin/sshd", "-D"]

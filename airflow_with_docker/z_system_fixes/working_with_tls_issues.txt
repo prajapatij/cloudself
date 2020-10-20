@@ -1,0 +1,22 @@
+### Adding Missing & Self signed CA Certs 
+
+-- Disable all python based TLS checks
+   [This does not work for "requests" packages]
+   $> os.environ["PYTHONHTTPSVERIFY"]="0"
+
+-- Update existing CA cert to reference bundle
+   $> ls -lta /etc/ssl/certs *<- default location for all the certs + their links
+   $> update-ca-certificates *<- updates all CA certs in default location
+
+-- Aquire custom CA certificate chain and update default store
+   $> openssl s_client -servername urllib3.readthedocs.io -connect urllib3.readthedocs.io:443 -showcerts
+    [Copy each --BEGIN--END-- sections into files like cert1.pem, cert2.pem... certn.pem]
+   $> cp ./my_certs/cert[1..n].pem /etc/ssl/certs/
+   $> update-ca-certificates
+
+-- Setting up custom CA cert file for "requests" packages
+   ["requests" packages make use of 'REQUESTS_CA_BUNDLE' variable to override their bundle file]
+   $> openssl s_client -servername urllib3.readthedocs.io -connect urllib3.readthedocs.io:443 -showcerts | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > mycacerts.pem
+   [Above command is not full proof but can be use full to generate large 'mycacerts.pem' file]
+
+   $> os.environ["REQUESTS_CA_BUNDLE"]="$SETUP_ROOT/all_certs/cacert.pem"

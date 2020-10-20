@@ -1,0 +1,53 @@
+### Setup Airflow WebServer and Scheduler with DB in pseudo mode
+
+-- Application user creation: "airflow" sudo user creation
+    [install sudo in debian first - apt-get install sudo]
+   $> sudo adduser airflow
+   $> sudo usermod -aG sudo airflow
+   $> groups airflow
+   $> su - airflow
+   $> ls /home
+   $> ls /root
+
+-- Setup 'pyenv' based environment for python development
+   [Follow instructions from 'pyenv_setup' section]
+
+-- Setup database *<- this is optional but goog to have as tempdb will needs cleanup all the time
+   $> sudo apt-get update
+   $> sudo apt-get install python-psycopg2
+   $> sudo apt-get install postgresql postgresql-contrib
+   $> sudo service postgresql start
+
+   $> sudo -u postgres psql
+   $> postgres=# create user airflow password 'airflow';
+   $> postgres=# create database airflow;
+   $> postgres=# grant all privileges on all tables in schema public to airflow;
+   $> postgres=# \q
+
+-- Setup binaries
+
+   $> su - airflow
+   $> sudo apt-get install python3-pip *<- Optional if 'pyenv' is already setup
+   $> sudo python3 -m pip install apache-airflow[postgres,s3,aws,crypto,gcp,google_auth]
+
+-- Edit default configurations & initialize database
+
+   $> vi airflow.cfg *<- Location: $AIRFLOW_HOME/airflow.cfg = (/home/airflow/airflow/airflow.cfg)
+	sql_alchemy_conn = postgresql+psycopg2://<pguserid>:<pgpass>@host_name/database_name
+			e.g., postgresql+psycopg2://airflow:airflow@localhost:5432/airflow
+   $> airflow initdb
+   $> airflow upgradedb *<- for existing db changes
+
+-- Start services
+   $> echo $AIRFLOW_HOME
+   $> sudo service postgresql start
+   $> nohup airflow webserver &> ./airflow_webserver.log &
+   $> nohup airflow scheduler &> ./airflow_scheduler.log &
+
+-- Stop services
+   $> cat $AIRFLOW_HOME/airflow-webserver.pid
+   $> sudo kill -9 {process_id of airflow}
+
+
+
+
